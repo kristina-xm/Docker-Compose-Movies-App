@@ -1,0 +1,41 @@
+services:
+    mongo:
+        networks:
+            - movies
+        container_name: mongodb
+        volumes:
+            - data:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+            - MONGO_INITDB_ROOT_PASSWORD=secret
+        image: mongo
+    backend:
+        networks:
+            - movies
+        container_name: backend
+        environment:
+            - MONGODB_USERNAME=mongoadmin
+            - MONGODB_PASSWORD=secret
+        ports:
+            - 80:80
+        volumes:
+            - logs:/logs
+            - ./frontend/src:/src
+        build: ./backend
+    frontend:
+        networks:
+            - movies
+        container_name: frontend
+        ports:
+            - 3000:3000
+        volumes:
+            - ./frontend/src:/src
+        build: ./frontend
+networks:
+    movies:
+        name: movies
+volumes:
+    data:
+        name: data
+    logs:
+        name: logs
